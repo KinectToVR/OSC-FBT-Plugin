@@ -1,0 +1,24 @@
+
+.vs/
+
+x64/
+
+KinectToVR/Generated Files/
+
+packages/
+
+external/eigen/
+
+external/gflags/
+
+external/glog/
+
+external/openvr/
+
+*.user
+
+Managed_JointsBasis_Handler/obj/
+
+Managed_SkeletonBasis_Handler/obj/
+
+Managed_Spectator_Handler/obj/

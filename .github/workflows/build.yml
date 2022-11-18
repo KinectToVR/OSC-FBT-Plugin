@@ -1,0 +1,37 @@
+name: K2TrackingDevice Samples Workflow
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.1.0
+        id: checkout_code
+        
+      - name: Setup Eigen
+        run: |
+          git submodule update --init
+
+      - name: Build Samples
+        run: |
+          Invoke-WebRequest -Uri 'https://github.com/microsoft/vswhere/releases/latest/download/vswhere.exe' -OutFile './vswhere.exe'
+          $msbuild = "$("$(.\vswhere.exe -legacy -prerelease -products * -format json | Select-String -Pattern "2022" | `
+               Select-String -Pattern "Studio" | Select-Object -First 1 | Select-String -Pattern "installationPath")" `
+              -replace('"installationPath": "','') -replace('",',''))".Trim() + "\\MSBuild\\Current\\Bin\\MSBuild.exe"
+          
+          &"$msbuild" K2TrackingDevice_Samples.sln "/p:Configuration=Release;Platform=x64"
+
+      - name: Get short commit SHA
+        id: slug
+        run: "$slug = '::set-output name=slug::' + $env:GITHUB_SHA.SubString(0,7); echo $slug"
+
+      - name: Upload Devices' Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Samples-Release-${{ steps.slug.outputs.slug }}
+          path: x64/Release/devices
+          if-no-files-found: error
+
+      

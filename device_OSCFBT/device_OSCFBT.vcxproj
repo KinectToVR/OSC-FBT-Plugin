@@ -150,6 +150,7 @@
       <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
 
 xcopy /y /d "$(ProjectDir)device_resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\"
+xcopy /y /e /i "$(ProjectDir)resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\resources\"
 
 xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
 </Command>
@@ -181,6 +182,7 @@ xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt
       <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
 
 xcopy /y /d "$(ProjectDir)device_resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\"
+xcopy /y /e /i "$(ProjectDir)resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\resources\"
 
 xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
 </Command>

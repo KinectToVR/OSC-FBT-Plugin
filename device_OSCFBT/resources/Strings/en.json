@@ -1,0 +1,6 @@
+{
+  "/Plugins/OSC-Plugin/Settings/Labels/TargetIP": "Device IP:",
+  "/Plugins/OSC-Plugin/Settings/Labels/Port": "Connection Port:",
+  "/Plugins/OSC-Plugin/Settings/Labels/Connect": "Connect trackers (OSC)",
+  "/Plugins/OSC-Plugin/Settings/Labels/Disconnect": "Destroy trackers (OSC)"
+}

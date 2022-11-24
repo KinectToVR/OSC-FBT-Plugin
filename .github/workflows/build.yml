@@ -1,4 +1,4 @@
-name: K2TrackingDevice Samples Workflow
+name: Amethyst OSC FBT Plugin
 on: [push]
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
                Select-String -Pattern "Studio" | Select-Object -First 1 | Select-String -Pattern "installationPath")" `
               -replace('"installationPath": "','') -replace('",',''))".Trim() + "\\MSBuild\\Current\\Bin\\MSBuild.exe"
           
-          &"$msbuild" K2TrackingDevice_Samples.sln "/p:Configuration=Release;Platform=x64"
+          &"$msbuild" OSCFBT.sln "/p:Configuration=Release;Platform=x64"
 
       - name: Get short commit SHA
         id: slug
@@ -30,7 +30,7 @@ jobs:
       - name: Upload Devices' Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: Samples-Release-${{ steps.slug.outputs.slug }}
+          name: OSC-Plugin-Release-${{ steps.slug.outputs.slug }}
           path: x64/Release/devices
           if-no-files-found: error
 

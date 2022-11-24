@@ -1,46 +1,34 @@
 #pragma once
-#include <thread>
-
 #include "Amethyst_API_Devices.h"
 
 /* Not exported */
 
-class OscHandler : public ktvr::K2TrackingDeviceBase_Spectator
+class OscHandler : public ktvr::K2TrackingDeviceBase_JointsBasis
 {
 public:
-	/* Device's internal functions & constructors */
+	/* K2API's things, which KTVR will make use of */
 
 	OscHandler()
 	{
-		// Create a dummy thread for pulling data from Amethyst
-		// Wait 5 seconds after init for all things to be set up
-
-		// Run a lambda to spare additional functions' creation
-		std::thread([&]
-		{
-			// Wait these 5 seconds
-			std::this_thread::sleep_for(std::chrono::seconds(5));
-
-			// Repeat until exit
-			while (true)
-			{
-				// Grab joint poses, eventually do something with them
-				auto const& joints = getAppJointPoses();
-
-				// Send them via OSC
-
-				// Sleep some time not to waste resources, run @50Hz
-				std::this_thread::sleep_for(std::chrono::milliseconds(20));
-			}
-		}).detach();
+		deviceName = L"Amethyst OSC";
 	}
 
 	virtual ~OscHandler()
 	{
 	}
 
-public:
-	bool sendOscPoses = false;
+	std::wstring getDeviceGUID() override
+	{
+		// This ID is unique to this plugin!
+		return L"KSAMPLES-VEND-API1-DVCE-OSCSPCTR";
+	}
+
+	HRESULT getStatusResult() override;
+	std::wstring statusResultWString(HRESULT stat) override;
+
+	void initialize() override;
+	void update() override;
+	void shutdown() override;
 };
 
 /* Exported for dynamic linking */

@@ -1,24 +1,41 @@
+# Prerequisites
+*.d
 
-.vs/
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
-x64/
+# Precompiled Headers
+*.gch
+*.pch
 
-KinectToVR/Generated Files/
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
 
-packages/
+# Fortran module files
+*.mod
+*.smod
 
-external/eigen/
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
-external/gflags/
+# Executables
+*.exe
+*.out
+*.app
 
-external/glog/
-
-external/openvr/
-
+# IDEs
+.idea
+.vs
+.vscode
 *.user
 
-Managed_JointsBasis_Handler/obj/
-
-Managed_SkeletonBasis_Handler/obj/
-
-Managed_Spectator_Handler/obj/
+# VS Compile directory
+x64/

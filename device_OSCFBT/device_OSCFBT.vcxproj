@@ -190,13 +190,15 @@ xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
-    <ClInclude Include="DeviceHandler.h" />
+    <ClInclude Include="OscHandler.h" />
+    <ClInclude Include="OscServer.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DeviceHandler.cpp" />
+    <ClCompile Include="OscHandler.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="miniosc.cpp" />
+    <ClCompile Include="OscServer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

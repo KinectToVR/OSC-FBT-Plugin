@@ -2,8 +2,11 @@
 #include "OscServer.h"
 #include <iostream>
 
-OscServer::OscServer(std::wstring ipAddress, uint32_t port)
+OscServer::OscServer(const std::wstring& ipAddress, uint32_t port)
 {
+    m_packetBundle = { 0 };
+    // Init props
+
     // Convert IP from wstring to c-style string
     const wchar_t* input = ipAddress.c_str();
 
@@ -53,13 +56,13 @@ int OscServer::Tick() {
 }
 
 void OscServer::BeginPacket() {
-    packetBundle = { 0 };
+    m_packetBundle = { 0 };
 }
 
-void OscServer::SendPacket_Vector3(std::string address, float elem1, float elem2, float elem3) {
-    minioscBundle(&packetBundle, address.c_str(), ",fff", elem1, elem2, elem3);
+void OscServer::SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3) {
+    minioscBundle(&m_packetBundle, address.c_str(), ",fff", elem1, elem2, elem3);
 }
 
 void OscServer::FlushData() {
-    minioscSendBundle(m_oscServer, &packetBundle);
+    minioscSendBundle(m_oscServer, &m_packetBundle);
 }

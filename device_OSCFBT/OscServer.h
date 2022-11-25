@@ -1,12 +1,9 @@
 #pragma once
 
-#include <mutex>
 #include <string>
 #include <Eigen/Dense>
 
 #include "miniosc.h"
-
-inline std::unique_lock<std::mutex> server_alive_mutex;
 
 class OscServer
 {

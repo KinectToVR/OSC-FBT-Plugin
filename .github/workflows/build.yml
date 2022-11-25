@@ -20,7 +20,7 @@ jobs:
           cd C:/vcpkg
           ./bootstrap-vcpkg.bat
           ./vcpkg integrate install
-          ./vcpkg install eigen3:x64-windows glog:x64-windows gflags:x64-windows cereal:x64-windows
+          ./vcpkg install eigen3:x64-windows-static glog:x64-windows-static gflags:x64-windows-static cereal:x64-windows-static
 
       - name: Build OSC Plugin
         run: |

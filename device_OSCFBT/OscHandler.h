@@ -30,6 +30,7 @@ public:
     HRESULT getStatusResult() override;
     std::wstring statusResultWString(HRESULT stat) override;
 
+    void tick();
     void initialize() override;
     void update() override;
     void onLoad() override;
@@ -37,9 +38,12 @@ public:
 
 private:
     void killServer();
+    void initLogging();
 
 private:
     std::shared_ptr<OscServer> m_server;
+
+    std::thread m_updateThread;
 
     bool m_hasBeenLoaded = false;
     // bool m_serverIsRunning = false;

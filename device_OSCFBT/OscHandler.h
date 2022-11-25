@@ -1,8 +1,14 @@
 #pragma once
+#include <set>
+
 #include "Amethyst_API_Devices.h"
+#include "Amethyst_API_Paths.h"
+
 #include "miniosc.h"
 #include "OscServer.h"
 #include "StringUtils.h"
+
+#include <timeapi.h>
 
 /* Not exported */
 
@@ -12,12 +18,15 @@ public:
     OscHandler()
     {
         deviceName = L"Amethyst OSC";
-        Flags_SettingsSupported = true;
         trackedJoints.clear();
+
+        Flags_SettingsSupported = true; // Yooooo
+        Flags_ForceSelfUpdate = true; // Just in case
     }
 
     ~OscHandler() override
     {
+        killServer(); // Just in case
     }
 
     std::wstring getDeviceGUID() override
@@ -26,11 +35,9 @@ public:
         return L"K2VRTEAM-VEND-API1-DVCE-OSCSPCTR";
     }
 
-
     HRESULT getStatusResult() override;
     std::wstring statusResultWString(HRESULT stat) override;
 
-    void tick();
     void initialize() override;
     void update() override;
     void onLoad() override;
@@ -42,13 +49,44 @@ private:
 
 private:
     std::shared_ptr<OscServer> m_server;
+    std::unique_ptr<std::thread> m_update_server_thread;
 
-    std::thread m_updateThread;
+    [[noreturn]] void update_loop()
+    {
+        while (true)
+        {
+            update(); // Standard update
+
+#if defined(WIN32)
+            //###Externet Change the minimum resolution for periodic timers on Windows to 1ms.
+            // On some windows systems the default minimum resolution is ~15ms which can have undesiered effects for tracking.
+            // This is needed for Windows 10 2004 and prior versions since any app can change the minimum resolution globaly.
+            timeBeginPeriod(1);
+#endif
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+#if defined(WIN32)
+            timeEndPeriod(1);
+#endif
+        }
+    }
 
     bool m_hasBeenLoaded = false;
     // bool m_serverIsRunning = false;
 
-    std::vector<ktvr::ITrackedJointType> m_jointMapping;
+    const std::set<ktvr::ITrackedJointType> m_jointMapping
+    {
+        // ktvr::ITrackedJointType::Joint_SpineShoulder,
+        ktvr::ITrackedJointType::Joint_ElbowLeft,
+        ktvr::ITrackedJointType::Joint_ElbowRight,
+        ktvr::ITrackedJointType::Joint_SpineMiddle,
+        ktvr::ITrackedJointType::Joint_SpineWaist,
+        // ktvr::ITrackedJointType::Joint_HipLeft,
+        // ktvr::ITrackedJointType::Joint_HipRight,
+        ktvr::ITrackedJointType::Joint_KneeLeft,
+        ktvr::ITrackedJointType::Joint_AnkleLeft,
+        ktvr::ITrackedJointType::Joint_KneeRight,
+        ktvr::ITrackedJointType::Joint_AnkleRight,
+    };
 
     // Default IP Address to stream OSC packets to. Currently defaults to localhost.
     std::wstring m_net_target_ip_address = L"127.0.0.1";

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <format>
 #include <ppl.h>
 
 #include "OscHandler.h"
@@ -28,37 +29,13 @@ std::wstring OscHandler::statusResultWString(const HRESULT stat)
 
 void OscHandler::initialize()
 {
-    // Initialize your device here
-    m_jointMapping = {
-        // ktvr::ITrackedJointType::Joint_SpineShoulder,
-        ktvr::ITrackedJointType::Joint_ElbowLeft,
-        ktvr::ITrackedJointType::Joint_ElbowRight,
-        ktvr::ITrackedJointType::Joint_SpineMiddle,
-        ktvr::ITrackedJointType::Joint_SpineWaist,
-        // ktvr::ITrackedJointType::Joint_HipLeft,
-        // ktvr::ITrackedJointType::Joint_HipRight,
-        ktvr::ITrackedJointType::Joint_KneeLeft,
-        ktvr::ITrackedJointType::Joint_AnkleLeft,
-        ktvr::ITrackedJointType::Joint_KneeRight,
-        ktvr::ITrackedJointType::Joint_AnkleRight,
-    };
-
-    // Mark the device as initialized
-    initialized = true;
+    // ignored
 }
 
-void OscHandler::update() {
-
-}
-
-void OscHandler::tick()
+void OscHandler::update()
 {
-    // Update joints' positions here
-    // Note: this is fired up every loop
-
-    LOG(INFO) << "Server tick!";
-
-    if (isInitialized() && m_server != nullptr && m_server->IsAlive())
+    // Execute a single update loop (tick)
+    if (m_server != nullptr && m_server->IsAlive())
     {
         LOG(INFO) << "OSC Server is running...";
 
@@ -78,10 +55,10 @@ void OscHandler::tick()
             LOG(INFO) << "Preparing packet data...";
 
             jointIdx++;
-            m_server->SendPacket_Vector3(string_format("/tracking/trackers/{%d}/position", jointIdx),
-                                        joint.getJointPosition());
-            m_server->SendPacket_Quat(string_format("/tracking/trackers/{%d}/rotation", jointIdx),
-                                     joint.getJointOrientation());
+            m_server->SendPacket_Vector3(
+                std::format("/tracking/trackers/{}/position", jointIdx), joint.getJointPosition());
+            m_server->SendPacket_Quat(
+                std::format("/tracking/trackers/{}/rotation", jointIdx), joint.getJointOrientation());
         }
 
         LOG(INFO) << "Sent OSC packet!";
@@ -98,7 +75,6 @@ void OscHandler::shutdown()
 
 void OscHandler::onLoad()
 {
-
     initLogging();
     // @TODO: Settings stuff here!
 
@@ -145,7 +121,6 @@ void OscHandler::onLoad()
         {
             killServer();
             LOG(INFO) << "Killing OSC server...";
-
         }
         else
         {
@@ -154,11 +129,8 @@ void OscHandler::onLoad()
             m_connect_button->Content(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Disconnect") + L" ");
 
             // @HACK: Update isn't called from Amethyst automatically, thus we have to dispatch it ourselves
-            m_updateThread = std::thread{ [=]() {
-                while (m_server != nullptr && m_server->IsAlive()) {
-                    tick();
-                }
-            } };
+            if (!m_update_server_thread) // Comment this check to reset each co/re/disconnect
+                m_update_server_thread.reset(new std::thread(&OscHandler::update_loop, this));
         }
     };
 }
@@ -172,22 +144,8 @@ void OscHandler::killServer()
     }
 }
 
-
-// Get file location in AppData
-inline std::wstring GetK2AppDataLogFileDir(
-    const std::wstring& relativeFolderName,
-    const std::wstring& relativeFilePath)
+void OscHandler::initLogging()
 {
-    std::filesystem::create_directories(
-        std::wstring(_wgetenv(L"APPDATA")) +
-        L"\\Amethyst\\logs\\" + relativeFolderName + L"\\");
-
-    return std::wstring(_wgetenv(L"APPDATA")) +
-        L"\\Amethyst\\logs\\" + relativeFolderName + L"\\" + relativeFilePath;
-}
-
-void OscHandler::initLogging() {
-
     // If logging was set up by some other thing / assembly,
     // "peacefully" ask it to exit and note that 
     if (google::IsGoogleLoggingInitialized())
@@ -195,7 +153,7 @@ void OscHandler::initLogging() {
         LOG(WARNING) << "Uh-Oh! It appears that google logging was set up previously from this caller.\n " <<
             "Although, it appears GLog likes Amethyst more! (It said that itself, did you know?)\n " <<
             "Logging will be shut down, re-initialized, and forwarded to \"" <<
-            WStringToString(GetK2AppDataLogFileDir(L"Amethyst", L"Amethyst_OSC_")).c_str() << "*.log\"";
+            WStringToString(ktvr::GetK2AppDataLogFileDir(L"Amethyst", L"Amethyst_OSC_")).c_str() << "*.log\"";
         google::ShutdownGoogleLogging();
     }
 
@@ -205,7 +163,8 @@ void OscHandler::initLogging() {
     FLAGS_timestamp_in_logfile_name = true;
 
     // Set up the logging directory
-    std::wstring thisLogDestination = GetK2AppDataLogFileDir(L"Amethyst", L"Amethyst_OSC_");
+    const std::wstring thisLogDestination =
+        ktvr::GetK2AppDataLogFileDir(L"Amethyst", L"Amethyst_OSC_");
 
     // Init logging
     google::InitGoogleLogging(WStringToString(thisLogDestination).c_str());
@@ -221,5 +180,4 @@ void OscHandler::initLogging() {
     // Log the current Amethyst version
     LOG(INFO) << "Initialized logging for ";
     google::FlushLogFiles(google::GLOG_INFO); // Flush manually
-
 }

@@ -2,6 +2,7 @@
 #include "Amethyst_API_Devices.h"
 #include "miniosc.h"
 #include "OscServer.h"
+#include "StringUtils.h"
 
 /* Not exported */
 

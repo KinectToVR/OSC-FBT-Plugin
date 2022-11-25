@@ -193,6 +193,7 @@ xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt
     <ClInclude Include="OscHandler.h" />
     <ClInclude Include="OscServer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OscHandler.cpp" />

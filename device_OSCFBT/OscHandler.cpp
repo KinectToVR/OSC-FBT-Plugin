@@ -41,8 +41,10 @@ void OscHandler::update()
 		m_server.Tick();
 		m_server.BeginPacket();
 
-		// @TODO: Implement
-		m_server.SendPacket_Vector3("/tracking/trackers/{idx}/position", 0, 0, 0);
+		// @TODO: Implement properly
+		// m_server.SendPacket_Vector3("/tracking/trackers/{idx}/position", 0, 0, 0);
+		int idx = 0;
+		m_server.SendPacket_Vector3(string_format("/tracking/trackers/{%d}/position", idx), 0, 0, 0);
 
 
 		auto joints = getAppJointPoses();

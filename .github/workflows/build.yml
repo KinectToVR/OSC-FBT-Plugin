@@ -13,8 +13,16 @@ jobs:
       - name: Setup Eigen
         run: |
           git submodule update --init
+          
+      - name: Setup vcpkg & libraries
+        run: |
+          git clone https://github.com/Microsoft/vcpkg.git C:/vcpkg
+          cd C:/vcpkg
+          ./bootstrap-vcpkg.bat
+          ./vcpkg integrate install
+          ./vcpkg install eigen3:x64-windows glog:x64-windows gflags:x64-windows cereal:x64-windows
 
-      - name: Build Samples
+      - name: Build OSC Plugin
         run: |
           Invoke-WebRequest -Uri 'https://github.com/microsoft/vswhere/releases/latest/download/vswhere.exe' -OutFile './vswhere.exe'
           $msbuild = "$("$(.\vswhere.exe -legacy -prerelease -products * -format json | Select-String -Pattern "2022" | `
@@ -27,7 +35,7 @@ jobs:
         id: slug
         run: "$slug = '::set-output name=slug::' + $env:GITHUB_SHA.SubString(0,7); echo $slug"
 
-      - name: Upload Devices' Artifact
+      - name: Upload OSC Plugin Artifact
         uses: actions/upload-artifact@v2
         with:
           name: OSC-Plugin-Release-${{ steps.slug.outputs.slug }}

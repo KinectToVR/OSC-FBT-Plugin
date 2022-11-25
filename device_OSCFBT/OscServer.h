@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <Eigen/Dense>
 
 #include "miniosc.h"
 
@@ -14,8 +15,12 @@ public:
 public:
 	int Tick();
 	void BeginPacket();
-	void SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3);
-	void FlushData();
+	int FlushData();
+	bool IsAlive();
+
+	int SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3);
+	int SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector);
+	int SendPacket_Quat(const std::string& address, Eigen::Quaterniond orientation);
 
 private:
 	static void Server_Callback(const char* address, const char* type, void** parameters);

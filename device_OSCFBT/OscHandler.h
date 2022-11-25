@@ -43,7 +43,9 @@ private:
 	OscServer m_server;
 
 	bool m_hasBeenLoaded = false;
-	bool m_serverIsRunning = false;
+	// bool m_serverIsRunning = false;
+
+	std::vector<ktvr::ITrackedJointType> m_jointMapping;
 
 	// Default IP Address to stream OSC packets to. Currently defaults to localhost.
 	std::wstring m_net_target_ip_address = L"127.0.0.1";

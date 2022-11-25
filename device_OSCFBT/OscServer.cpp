@@ -1,41 +1,31 @@
 #include "pch.h"
-#include "OscServer.h"
+#define GLOG_NO_ABBREVIATED_SEVERITIES
+#include <glog/logging.h>
+
 #include <iostream>
+
+#pragma comment(lib, "ws2_32.lib")
+
+#include "OscServer.h"
+#include "Amethyst_API_Devices.h"
 
 OscServer::OscServer(const std::wstring& ipAddress, uint32_t port)
 {
+    LOG(INFO) << "Initializing OSC Server";
     m_packetBundle = { 0 };
     // Init props
 
-    // Convert IP from wstring to c-style string
-    const wchar_t* input = ipAddress.c_str();
-
-    // Count required buffer size (plus one for null-terminator).
-    size_t size = (wcslen(input) + 1) * sizeof(wchar_t);
-    char* buffer = new char[size];
-
-#ifdef __STDC_LIB_EXT1__
-    // wcstombs_s is only guaranteed to be available if __STDC_LIB_EXT1__ is defined
-    size_t convertedSize;
-    std::wcstombs_s(&convertedSize, buffer, size, input, size);
-#else
-    std::wcstombs(buffer, input, size);
-#endif
-
-    // Use the string stored in "buffer" variable
-
     int oscError = 0;
-    m_oscServer = minioscInit(9003, port, buffer, &oscError);
+    m_oscServer = minioscInit(9003, port, (char*) WStringToString(ipAddress).c_str(), &oscError);
 
-    std::cout << oscError << std::endl;
-
-    // Free allocated memory:
-    delete[] buffer;
+    LOG(INFO) << oscError;
 }
 
 OscServer::~OscServer()
 {
+    LOG(INFO) << "Shutting down OSC Server";
     minioscClose(m_oscServer);
+    m_oscServer = 0;
 }
 
 
@@ -46,23 +36,35 @@ void OscServer::Server_Callback(const char* address, const char* type, void** pa
     // printf("RXCB: %s %s [%p %p] %f\n", address, type, type, parameters[0],
     //     (double)*((float*)parameters[0]));
 
-    std::cout << "RXCB: " << address << " " << type << " " << type << " [" << parameters[0] << " " << (double)*((float*)parameters[0]) << std::endl;
+    LOG(INFO) << "OSC::RXCB: " << address << " " << type << " " << type << " [" << parameters[0] << " " << (double)*((float*)parameters[0]);
 }
 
 int OscServer::Tick() {
     // Poll, waiting for up to 10 ms for a message.
-    int r = minioscPoll(m_oscServer, 10, Server_Callback);
-    return r;
+    return minioscPoll(m_oscServer, 10, Server_Callback);
 }
 
 void OscServer::BeginPacket() {
     m_packetBundle = { 0 };
 }
 
-void OscServer::SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3) {
-    minioscBundle(&m_packetBundle, address.c_str(), ",fff", elem1, elem2, elem3);
+int OscServer::SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3) {
+    return minioscBundle(&m_packetBundle, address.c_str(), ",fff", elem1, elem2, elem3);
 }
 
-void OscServer::FlushData() {
-    minioscSendBundle(m_oscServer, &m_packetBundle);
+int OscServer::SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector) {
+    return minioscBundle(&m_packetBundle, address.c_str(), ",fff", vector.x(), vector.y(), vector.z());
+}
+
+int OscServer::SendPacket_Quat(const std::string& address, Eigen::Quaterniond orientation) {
+    Eigen::Vector3d eulerAngles = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+    return minioscBundle(&m_packetBundle, address.c_str(), ",fff", eulerAngles.x(), eulerAngles.y(), eulerAngles.z());
+}
+
+int OscServer::FlushData() {
+    return minioscSendBundle(m_oscServer, &m_packetBundle);
+}
+
+bool OscServer::IsAlive() {
+    return m_oscServer != 0;
 }

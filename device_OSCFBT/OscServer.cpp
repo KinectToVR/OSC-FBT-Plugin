@@ -12,6 +12,7 @@
 OscServer::OscServer(const std::wstring& ipAddress, const uint32_t port)
 {
     LOG(INFO) << "Initializing OSC Server";
+
     m_packetBundle = {nullptr};
     // Init props
 
@@ -21,10 +22,11 @@ OscServer::OscServer(const std::wstring& ipAddress, const uint32_t port)
     LOG(INFO) << oscError;
 }
 
-OscServer::~OscServer()
+void OscServer::Cleanup()
 {
     LOG(INFO) << "Shutting down OSC Server";
     minioscClose(m_oscServer);
+
     m_oscServer = nullptr;
 }
 

@@ -50,15 +50,13 @@ void OscHandler::update()
 
         for (const auto& i : m_jointMapping)
         {
-            const auto& joint = joints[i];
-
             LOG(INFO) << "Preparing packet data...";
 
             jointIdx++;
             m_server->SendPacket_Vector3(
-                std::format("/tracking/trackers/{}/position", jointIdx), joint.getJointPosition());
+                std::format("/tracking/trackers/{}/position", jointIdx), joints[i].getJointPosition());
             m_server->SendPacket_Quat(
-                std::format("/tracking/trackers/{}/rotation", jointIdx), joint.getJointOrientation());
+                std::format("/tracking/trackers/{}/rotation", jointIdx), joints[i].getJointOrientation());
         }
 
         LOG(INFO) << "Sent OSC packet!";
@@ -139,7 +137,9 @@ void OscHandler::killServer()
 {
     if (m_server != nullptr && m_server->IsAlive())
     {
+        m_server->Cleanup();
         m_server.reset();
+
         m_connect_button->Content(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Connect") + L" ");
     }
 }

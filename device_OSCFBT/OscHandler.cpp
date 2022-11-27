@@ -37,7 +37,7 @@ void OscHandler::update()
     // Execute a single update loop (tick)
     if (m_server != nullptr && m_server->IsAlive())
     {
-        LOG(INFO) << "OSC Server is running...";
+        // LOG(INFO) << "OSC Server is running...";
 
         m_server->Tick();
         m_server->BeginPacket();
@@ -50,16 +50,20 @@ void OscHandler::update()
 
         for (const auto& i : m_jointMapping)
         {
-            LOG(INFO) << "Preparing packet data...";
+            // LOG(INFO) << "Preparing packet data...";
 
             jointIdx++;
             m_server->SendPacket_Vector3(
                 std::format("/tracking/trackers/{}/position", jointIdx), joints[i].getJointPosition());
             m_server->SendPacket_Quat(
                 std::format("/tracking/trackers/{}/rotation", jointIdx), joints[i].getJointOrientation());
+
+            Eigen::Vector3d eulerAngles = joints[i].getJointOrientation().toRotationMatrix().eulerAngles(0, 1, 2);
+            LOG(INFO) << "POS::{x:" << (joints[i].getJointPosition().x()) << "\ty:" << (joints[i].getJointPosition().y()) << "\tz:" << (joints[i].getJointPosition().z())
+                << "\t}\tROT::{x:" << (eulerAngles.x()) << "\ty:" << (eulerAngles.y()) << "\tz:" << (eulerAngles.z()) << "\t}";
         }
 
-        LOG(INFO) << "Sent OSC packet!";
+        // LOG(INFO) << "Sent OSC packet!";
         m_server->FlushData();
     }
 }

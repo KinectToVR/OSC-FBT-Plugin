@@ -28,7 +28,7 @@ void OscServer::BeginPacket()
 
 }
 
-int OscServer::SendPacket_Vector3(const std::string& address, const float elem1, const float elem2, const float elem3)
+void OscServer::SendPacket_Vector3(const std::string& address, const float elem1, const float elem2, const float elem3)
 {
     auto message = hekky::osc::OscMessage(address);
     message.Push((float) elem1);
@@ -37,7 +37,7 @@ int OscServer::SendPacket_Vector3(const std::string& address, const float elem1,
     m_udpSender.Send(message);
 }
 
-int OscServer::SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector)
+void OscServer::SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector)
 {
     auto message = hekky::osc::OscMessage(address);
     message.Push( (float) (vector.x()));

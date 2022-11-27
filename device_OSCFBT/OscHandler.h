@@ -1,16 +1,24 @@
 #pragma once
 #include <set>
+#include <chrono>
+#include <timeapi.h>
 
 #include "Amethyst_API_Devices.h"
 #include "Amethyst_API_Paths.h"
 
 // #include "miniosc.h"
 #include "OscServer.h"
-#include "StringUtils.h"
-
-#include <timeapi.h>
 
 /* Not exported */
+
+inline uint64_t timeSinceEpochMillis() {
+    return duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
+
+// 20ms -> 50FPS
+#define TARGET_FRAME_TIME_MILLIS 20
+// 1ms
+#define MIN_FRAME_TIME_MILLIS 1
 
 class OscHandler : public ktvr::K2TrackingDeviceBase_JointsBasis
 {
@@ -55,6 +63,7 @@ private:
     {
         while (true)
         {
+            uint64_t initialTime = timeSinceEpochMillis();
             update(); // Standard update
 
 #if defined(WIN32)
@@ -63,7 +72,9 @@ private:
             // This is needed for Windows 10 2004 and prior versions since any app can change the minimum resolution globaly.
             timeBeginPeriod(1);
 #endif
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            uint64_t deltaTime = timeSinceEpochMillis() - initialTime;
+            uint64_t targetTime = max(TARGET_FRAME_TIME_MILLIS - deltaTime, MIN_FRAME_TIME_MILLIS);
+            std::this_thread::sleep_for(std::chrono::milliseconds(targetTime));
 #if defined(WIN32)
             timeEndPeriod(1);
 #endif

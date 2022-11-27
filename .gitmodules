@@ -1,6 +1,6 @@
 [submodule "external/eigen"]
 	path = external/eigen
 	url = https://gitlab.com/libeigen/eigen
-[submodule "external/miniosc"]
-	path = external/miniosc
-	url = https://github.com/hyblocker/miniosc.git
+[submodule "external/hekky-osc"]
+	path = external/hekky-osc
+	url = https://github.com/hyblocker/hekky-osc.git

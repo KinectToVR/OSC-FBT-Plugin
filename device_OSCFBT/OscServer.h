@@ -3,30 +3,27 @@
 #include <string>
 #include <Eigen/Dense>
 
-#include "miniosc.h"
+#include "hekky-osc.hpp"
 
 class OscServer
 {
 public:
-    explicit OscServer(const std::wstring& ipAddress, uint32_t port);
+
+    OscServer(const std::string& ipAddress, uint32_t port);
     ~OscServer() = default;
 
 public:
-    int Tick();
+    void Tick();
     void BeginPacket();
-    int FlushData();
+    void FlushData();
     bool IsAlive();
 
-    int SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3);
-    int SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector);
-    int SendPacket_Quat(const std::string& address, const Eigen::Quaterniond& orientation);
+    void SendPacket_Vector3(const std::string& address, float elem1, float elem2, float elem3);
+    void SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector);
+    void SendPacket_Quat(const std::string& address, const Eigen::Quaterniond& orientation);
 
     void Cleanup();
 
 private:
-    static void Server_Callback(const char* address, const char* type, void** parameters);
-
-private:
-    mobundle m_packetBundle;
-    miniosc* m_oscServer;
+    hekky::osc::UdpSender m_udpSender;
 };

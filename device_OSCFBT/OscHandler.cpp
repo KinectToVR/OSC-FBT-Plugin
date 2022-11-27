@@ -123,7 +123,7 @@ void OscHandler::onLoad()
         else
         {
             LOG(INFO) << "Starting OSC server...";
-            m_server = std::make_shared<OscServer>(m_ip_text_box->Text(), stoi(m_port_text_box->Text()));
+            m_server = std::make_shared<OscServer>(WStringToString(m_ip_text_box->Text()), static_cast<uint32_t>(stoi(m_port_text_box->Text())));
             m_connect_button->Content(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Disconnect") + L" ");
 
             // @HACK: Update isn't called from Amethyst automatically, thus we have to dispatch it ourselves

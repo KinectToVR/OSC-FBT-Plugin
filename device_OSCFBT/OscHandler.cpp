@@ -1,6 +1,4 @@
 #include "pch.h"
-#define GLOG_NO_ABBREVIATED_SEVERITIES
-#include <glog/logging.h>
 
 #include <iostream>
 #include <chrono>
@@ -48,19 +46,29 @@ void OscHandler::update()
         const auto joints = getAppJointPoses();
         uint32_t jointIdx = 0;
 
-        for (const auto& i : m_jointMapping)
+        for (const auto& joint : joints)
         {
             // LOG(INFO) << "Preparing packet data...";
+            
+            // std::wstring msg = L"Name::\"" + joint.getJointName() + L"\"\t; Tracking::" + std::to_wstring(joint.getTrackingState());
+            // logInfoMessage(msg);
 
-            jointIdx++;
-            m_server->SendPacket_Vector3(
-                std::format("/tracking/trackers/{}/position", jointIdx), joints[i].getJointPosition());
-            m_server->SendPacket_Quat(
-                std::format("/tracking/trackers/{}/rotation", jointIdx), joints[i].getJointOrientation());
+            if (joint.getTrackingState() == ktvr::State_NotTracked)
+                continue;
 
-            Eigen::Vector3d eulerAngles = joints[i].getJointOrientation().toRotationMatrix().eulerAngles(0, 1, 2);
-            LOG(INFO) << "POS::{x:" << (joints[i].getJointPosition().x()) << "\ty:" << (joints[i].getJointPosition().y()) << "\tz:" << (joints[i].getJointPosition().z())
-                << "\t}\tROT::{x:" << (eulerAngles.x()) << "\ty:" << (eulerAngles.y()) << "\tz:" << (eulerAngles.z()) << "\t}";
+            // Only accept these joints
+            if (joint.getJointName().compare(L"AME-WAIST")    || joint.getJointName().compare(L"AME-CHEST") ||
+                joint.getJointName().compare(L"AME-LFOOT")    || joint.getJointName().compare(L"AME-RFOOT") ||
+                joint.getJointName().compare(L"AME-LELBOW")   || joint.getJointName().compare(L"AME-RELBOW") ||
+                joint.getJointName().compare(L"AME-LKNEE")    || joint.getJointName().compare(L"AME-RKNEE") )
+            {
+
+                jointIdx++;
+                m_server->SendPacket_Vector3(
+                    std::format("/tracking/trackers/{}/position", jointIdx), joint.getJointPosition() + m_tracker_offset);
+                m_server->SendPacket_Quat(
+                    std::format("/tracking/trackers/{}/rotation", jointIdx), joint.getJointOrientation());
+            }
         }
 
         // LOG(INFO) << "Sent OSC packet!";
@@ -71,33 +79,59 @@ void OscHandler::update()
 void OscHandler::shutdown()
 {
     // Turn your device off here
-    LOG(INFO) << "Shutting down OSC server...";
+    logInfoMessage(L"Shutting down OSC server...");
     killServer();
 }
 
 void OscHandler::onLoad()
 {
-    initLogging();
-    // @TODO: Settings stuff here!
-
     // Create elements
     m_ip_label_text_block = CreateTextBlock(
         requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/TargetIP") + L" ");
     // m_ip_text_box = CreateTextBlock(m_net_target_ip_address);
     m_ip_text_box = CreateTextBox();
     m_ip_text_box->Text(m_net_target_ip_address);
-    m_ip_text_box->Width(131);
+    m_ip_text_box->Width(146);
 
     m_port_label_text_block = CreateTextBlock(
         requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Port") + L" ");
     // m_port_text_box = CreateTextBlock(std::to_wstring(m_net_port));
     m_port_text_box = CreateTextBox();
     m_port_text_box->Text(std::to_wstring(m_net_port));
-    m_port_text_box->Width(80);
+    m_port_text_box->Width(95);
 
     m_connect_button = CreateButton(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Connect") + L" ");
-    m_connect_button->Width(212);
+    m_connect_button->Width(227);
     m_connect_button->IsEnabled(true);
+
+    m_yoffset_label = CreateTextBlock(
+        requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/YOffset") + L" ");
+    // m_port_text_box = CreateTextBlock(std::to_wstring(m_net_port));
+    m_yoffset_number_box = CreateNumberBox(OSC_OFFSET_DEFAULT);
+    m_yoffset_number_box->Width(116);
+    m_yoffset_number_box->OnValueChanged = [&, this](ktvr::Interface::NumberBox* sender, const int& new_value)
+    {
+        // Just ignore if it was us
+        if (m_yoffset_value_change_pending) return;
+        m_yoffset_value_change_pending = true; // Lock
+
+        // Backup to writable
+        int _value = new_value;
+
+        // Handle resets
+        // if (_value < 0) _value = 75;
+
+        const int fixed_new_value =
+            std::clamp(_value, -200, 200);
+
+        sender->Value(fixed_new_value); // Overwrite
+        m_tracker_offset.y() = static_cast<double>(fixed_new_value) / 100.0;
+
+        // We're done, unlock the handler
+        m_yoffset_value_change_pending = false;
+        // @TOOD: Save
+    };
+
 
     // Append the elements to the interface
     layoutRoot->AppendElementPairStack(
@@ -107,8 +141,12 @@ void OscHandler::onLoad()
     layoutRoot->AppendElementPairStack(
         m_port_label_text_block,
         m_port_text_box);
-
+    
     layoutRoot->AppendSingleElement(m_connect_button);
+
+    layoutRoot->AppendElementPairStack(
+        m_yoffset_label,
+        m_yoffset_number_box);
 
     // Mark everything as set up
     m_hasBeenLoaded = true;
@@ -118,15 +156,15 @@ void OscHandler::onLoad()
     {
         // @TODO: Actually connect trackers
 
-        LOG(INFO) << "Connecting trackers via OSC...";
+        logInfoMessage(L"Connecting trackers via OSC...");
         if (m_server != nullptr && m_server->IsAlive())
         {
             killServer();
-            LOG(INFO) << "Killing OSC server...";
+            logInfoMessage(L"Killing OSC server...");
         }
         else
         {
-            LOG(INFO) << "Starting OSC server...";
+            logInfoMessage(L"Starting OSC server...");
             m_server = std::make_shared<OscServer>(WStringToString(m_ip_text_box->Text()), static_cast<uint32_t>(stoi(m_port_text_box->Text())));
             m_connect_button->Content(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Disconnect") + L" ");
 
@@ -146,42 +184,4 @@ void OscHandler::killServer()
 
         m_connect_button->Content(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Connect") + L" ");
     }
-}
-
-void OscHandler::initLogging()
-{
-    // If logging was set up by some other thing / assembly,
-    // "peacefully" ask it to exit and note that 
-    if (google::IsGoogleLoggingInitialized())
-    {
-        LOG(WARNING) << "Uh-Oh! It appears that google logging was set up previously from this caller.\n " <<
-            "Although, it appears GLog likes Amethyst more! (It said that itself, did you know?)\n " <<
-            "Logging will be shut down, re-initialized, and forwarded to \"" <<
-            WStringToString(ktvr::GetK2AppDataLogFileDir(L"Amethyst", L"Amethyst_OSC_")).c_str() << "*.log\"";
-        google::ShutdownGoogleLogging();
-    }
-
-    // Set up logging : flags
-    FLAGS_logbufsecs = 0; // Set max timeout
-    FLAGS_minloglevel = google::GLOG_INFO;
-    FLAGS_timestamp_in_logfile_name = true;
-
-    // Set up the logging directory
-    const std::wstring thisLogDestination =
-        ktvr::GetK2AppDataLogFileDir(L"Amethyst", L"Amethyst_OSC_");
-
-    // Init logging
-    google::InitGoogleLogging(WStringToString(thisLogDestination).c_str());
-
-    // Delete logs older than 7 days
-    google::EnableLogCleaner(7);
-
-    // Log everything >=INFO to same file
-    google::SetLogDestination(google::GLOG_INFO, WStringToString(thisLogDestination).c_str());
-
-    google::SetLogFilenameExtension(".log");
-
-    // Log the current Amethyst version
-    LOG(INFO) << "Initialized logging for ";
-    google::FlushLogFiles(google::GLOG_INFO); // Flush manually
 }

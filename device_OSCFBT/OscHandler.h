@@ -82,32 +82,20 @@ private:
     }
 
     bool m_hasBeenLoaded = false;
-    // bool m_serverIsRunning = false;
-
-    const std::set<ktvr::ITrackedJointType> m_jointMapping
-    {
-        // ktvr::ITrackedJointType::Joint_SpineShoulder,
-        ktvr::ITrackedJointType::Joint_ElbowLeft,
-        ktvr::ITrackedJointType::Joint_ElbowRight,
-        ktvr::ITrackedJointType::Joint_SpineMiddle,
-        ktvr::ITrackedJointType::Joint_SpineWaist,
-        // ktvr::ITrackedJointType::Joint_HipLeft,
-        // ktvr::ITrackedJointType::Joint_HipRight,
-        ktvr::ITrackedJointType::Joint_KneeLeft,
-        ktvr::ITrackedJointType::Joint_AnkleLeft,
-        ktvr::ITrackedJointType::Joint_KneeRight,
-        ktvr::ITrackedJointType::Joint_AnkleRight,
-    };
+    bool m_yoffset_value_change_pending = false;
+    Eigen::Vector3d m_tracker_offset {0.0, 0.0, 0.0};
 
     // Default IP Address to stream OSC packets to. Currently defaults to localhost.
     std::wstring m_net_target_ip_address = L"127.0.0.1";
     // Default port to stream OSC packets on. Currently defaults to 9000.
     uint32_t m_net_port = 9000;
+    const uint32_t OSC_OFFSET_DEFAULT = 150;
 
     // UI Elements
-    ktvr::Interface::TextBlock *m_ip_label_text_block, *m_port_label_text_block;
+    ktvr::Interface::TextBlock *m_ip_label_text_block, *m_port_label_text_block, * m_yoffset_label;
     ktvr::Interface::TextBox *m_ip_text_box, *m_port_text_box;
-    ktvr::Interface::Button* m_connect_button;
+    ktvr::Interface::NumberBox *m_yoffset_number_box;
+    ktvr::Interface::Button *m_connect_button;
 };
 
 /* Exported for dynamic linking */
@@ -118,10 +106,14 @@ extern "C" __declspec(dllexport) void* TrackingDeviceBaseFactory(
     // but only if interfaces are the same / up-to-date
     if (0 == strcmp(ktvr::IAME_API_Devices_Version, pVersionName))
     {
-        static OscHandler TrackingHandler; // Create a new device handler -> KinectV2
+        static auto TrackingHandler = new OscHandler(); // Create a new device handler -> owoTrack
 
         *pReturnCode = ktvr::K2InitError_None;
-        return &TrackingHandler;
+        return TrackingHandler;
+
+        // If you wanna know why of all things, the osc plugin is constructed by `new` as an exception workaround
+        // then you should read this: (it was causing a crash with its destructor, now the destructor isn't called)
+        // https://stackoverflow.com/questions/54253145/c-application-crashes-with-atexit-error#comment95332406_54253145
     }
 
     // Return code for initialization

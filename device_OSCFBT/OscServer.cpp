@@ -1,6 +1,6 @@
 #include "pch.h"
-#define GLOG_NO_ABBREVIATED_SEVERITIES
-#include <glog/logging.h>
+// #define GLOG_NO_ABBREVIATED_SEVERITIES
+// #include <glog/logging.h>
 
 #include <iostream>
 
@@ -10,12 +10,12 @@
 OscServer::OscServer(const std::string& ipAddress, uint32_t port)
     : m_udpSender(ipAddress, port)
 {
-    LOG(INFO) << "Initializing OSC Server";
+    // LOG(INFO) << "Initializing OSC Server";
 }
 
 void OscServer::Cleanup()
 {
-    LOG(INFO) << "Shutting down OSC Server";
+    // LOG(INFO) << "Shutting down OSC Server";
     m_udpSender.Close();
 }
 
@@ -38,7 +38,7 @@ void OscServer::SendPacket_Vector3(const std::string& address, const float elem1
 void OscServer::SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector)
 {
     auto message = hekky::osc::OscMessage(address);
-    message.Push( (float) (vector.x()))->Push( (float) (vector.y()))->Push( (float) (vector.z()));
+    message.Push( (float) (-vector.x()))->Push( (float) (vector.y()))->Push( (float) (vector.z()));
     m_udpSender.Send(message);
 }
 
@@ -48,9 +48,9 @@ void OscServer::SendPacket_Quat(const std::string& address, const Eigen::Quatern
 
     auto message = hekky::osc::OscMessage(address);
     message.Push(
-        (float) (eulerAngles.x() * math::constants::RAD2DEG))->Push(
-        (float) (eulerAngles.y() * math::constants::RAD2DEG))->Push(
-        (float) (eulerAngles.z() * math::constants::RAD2DEG));
+        (float) (+eulerAngles.x() * math::constants::RAD2DEG))->Push(   // Pitch
+        (float) (-eulerAngles.y() * math::constants::RAD2DEG))->Push(   // Yaw
+        (float) (-eulerAngles.z() * math::constants::RAD2DEG));         // Roll
     m_udpSender.Send(message);
 }
 

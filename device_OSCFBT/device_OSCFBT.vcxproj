@@ -103,7 +103,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)external\miniosc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib;$(SolutionDir)$(Platform)\$(Configuration)\hekky-osc-static.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
@@ -138,7 +138,7 @@ xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\A
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)external\miniosc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib;$(SolutionDir)$(Platform)\$(Configuration)\hekky-osc-static.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
@@ -171,7 +171,7 @@ xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\A
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)external\miniosc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib;$(SolutionDir)$(Platform)\$(Configuration)\hekky-osc-static.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
@@ -208,7 +208,7 @@ xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\A
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)external\miniosc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib;$(SolutionDir)$(Platform)\$(Configuration)\hekky-osc-static.lib</AdditionalDependencies>
+      <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
@@ -240,6 +240,11 @@ xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\A
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\external\hekky-osc\src\hekky-osc-static.vcxproj">
+      <Project>{d7ae0daa-ee50-46b8-a92b-ab9b7c3a37ff}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

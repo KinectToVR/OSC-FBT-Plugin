@@ -27,3 +27,11 @@ public:
 private:
     hekky::osc::UdpSender m_udpSender;
 };
+
+namespace math {
+    namespace constants {
+        constexpr double PI = 3.14159265358979323846;
+        constexpr double RAD2DEG = 360.0 / (PI * 2.0);
+        constexpr double DEG2RAD = (PI * 2.0) / 360.0;
+    }
+}

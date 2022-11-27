@@ -31,18 +31,14 @@ void OscServer::BeginPacket()
 void OscServer::SendPacket_Vector3(const std::string& address, const float elem1, const float elem2, const float elem3)
 {
     auto message = hekky::osc::OscMessage(address);
-    message.Push((float) elem1);
-    message.Push((float) elem2);
-    message.Push((float) elem3);
+    message.Push((float) elem1)->Push((float) elem2)->Push((float) elem3);
     m_udpSender.Send(message);
 }
 
 void OscServer::SendPacket_Vector3(const std::string& address, Eigen::Vector3d vector)
 {
     auto message = hekky::osc::OscMessage(address);
-    message.Push( (float) (vector.x()));
-    message.Push( (float) (vector.y()));
-    message.Push( (float) (vector.z()));
+    message.Push( (float) (vector.x()))->Push( (float) (vector.y()))->Push( (float) (vector.z()));
     m_udpSender.Send(message);
 }
 
@@ -51,9 +47,10 @@ void OscServer::SendPacket_Quat(const std::string& address, const Eigen::Quatern
     Eigen::Vector3d eulerAngles = orientation.toRotationMatrix().eulerAngles(0, 1, 2);
 
     auto message = hekky::osc::OscMessage(address);
-    message.Push((float) (eulerAngles.x()));
-    message.Push((float) (eulerAngles.y()));
-    message.Push((float) (eulerAngles.z()));
+    message.Push(
+        (float) (eulerAngles.x() * math::constants::RAD2DEG))->Push(
+        (float) (eulerAngles.y() * math::constants::RAD2DEG))->Push(
+        (float) (eulerAngles.z() * math::constants::RAD2DEG));
     m_udpSender.Send(message);
 }
 

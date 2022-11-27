@@ -3,4 +3,4 @@
 	url = https://gitlab.com/libeigen/eigen
 [submodule "external/hekky-osc"]
 	path = external/hekky-osc
-	url = https://github.com/hyblocker/hekky-osc.git
+	url = https://github.com/hyblocker/hekky-osc

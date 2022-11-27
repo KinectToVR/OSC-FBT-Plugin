@@ -105,6 +105,19 @@
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)external\miniosc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib;$(SolutionDir)$(Platform)\$(Configuration)\hekky-osc-static.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
+
+xcopy /y /d "$(ProjectDir)device_resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\"
+xcopy /y /e /i "$(ProjectDir)resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\resources\"
+
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).pdb" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).exp" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+
+xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\Amethyst\devices\AmeOSC"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -127,6 +140,19 @@
       <AdditionalLibraryDirectories>$(SolutionDir)$(Platform)\$(Configuration);$(SolutionDir)external\miniosc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Winmm.lib;shlwapi.lib;ws2_32.lib;$(SolutionDir)$(Platform)\$(Configuration)\hekky-osc-static.lib</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>mkdir "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC"
+
+xcopy /y /d "$(ProjectDir)device_resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\"
+xcopy /y /e /i "$(ProjectDir)resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\resources\"
+
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).pdb" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).exp" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+
+xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\Amethyst\devices\AmeOSC"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -154,9 +180,11 @@ xcopy /y /d "$(ProjectDir)device_resources\*" "$(SolutionDir)$(Platform)\$(Confi
 xcopy /y /e /i "$(ProjectDir)resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\resources\"
 
 xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).pdb" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).exp" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
 
-xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\gflags*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\devices\owoTrackVR\bin\win64\"
-xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\glog*.dll" "$(SolutionDir)$(Platform)\$(Configuration)\devices\owoTrackVR\bin\win64\"</Command>
+xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\Amethyst\devices\AmeOSC"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -188,7 +216,12 @@ xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\glog*.dll" "$(SolutionDi
 xcopy /y /d "$(ProjectDir)device_resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\"
 xcopy /y /e /i "$(ProjectDir)resources\*" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\resources\"
 
-xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"</Command>
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName)$(TargetExt)" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).pdb" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).exp" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+xcopy /y /d "$(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).lib" "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC\bin\win64\"
+
+xcopy /y /e /i "$(SolutionDir)$(Platform)\$(Configuration)\devices\AmeOSC" "C:\Amethyst\devices\AmeOSC"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

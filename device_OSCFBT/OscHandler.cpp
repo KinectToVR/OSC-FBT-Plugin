@@ -85,6 +85,8 @@ void OscHandler::shutdown()
 
 void OscHandler::onLoad()
 {
+    globalLogFunc = logInfoMessage;
+
     // Create elements
     m_ip_label_text_block = CreateTextBlock(
         requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/TargetIP") + L" ");
@@ -100,6 +102,13 @@ void OscHandler::onLoad()
     m_port_text_box->Text(std::to_wstring(m_net_port));
     m_port_text_box->Width(95);
 
+    m_portIn_label_text_block = CreateTextBlock(
+        requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/PortIn") + L" ");
+    // m_port_text_box = CreateTextBlock(std::to_wstring(m_net_port));
+    m_portIn_text_box = CreateTextBox();
+    m_portIn_text_box->Text(std::to_wstring(m_net_port_in));
+    m_portIn_text_box->Width(95);
+
     m_connect_button = CreateButton(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Connect") + L" ");
     m_connect_button->Width(227);
     m_connect_button->IsEnabled(true);
@@ -108,7 +117,7 @@ void OscHandler::onLoad()
         requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/YOffset") + L" ");
     // m_port_text_box = CreateTextBlock(std::to_wstring(m_net_port));
     m_yoffset_number_box = CreateNumberBox(OSC_OFFSET_DEFAULT);
-    m_yoffset_number_box->Width(116);
+    m_yoffset_number_box->Width(250);
     m_yoffset_number_box->OnValueChanged = [&, this](ktvr::Interface::NumberBox* sender, const int& new_value)
     {
         // Just ignore if it was us
@@ -141,6 +150,10 @@ void OscHandler::onLoad()
     layoutRoot->AppendElementPairStack(
         m_port_label_text_block,
         m_port_text_box);
+
+    layoutRoot->AppendElementPairStack(
+        m_portIn_label_text_block,
+        m_portIn_label_text_block);
     
     layoutRoot->AppendSingleElement(m_connect_button);
 
@@ -165,7 +178,11 @@ void OscHandler::onLoad()
         else
         {
             logInfoMessage(L"Starting OSC server...");
-            m_server = std::make_shared<OscServer>(WStringToString(m_ip_text_box->Text()), static_cast<uint32_t>(stoi(m_port_text_box->Text())));
+            m_server = std::make_shared<OscServer>(
+                WStringToString(m_ip_text_box->Text()),
+                static_cast<uint32_t>(stoi(m_port_text_box->Text())),
+                static_cast<uint32_t>(stoi(m_portIn_text_box->Text()))
+            );
             m_connect_button->Content(requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/Disconnect") + L" ");
 
             // @HACK: Update isn't called from Amethyst automatically, thus we have to dispatch it ourselves

@@ -7,8 +7,8 @@
 #include "OscServer.h"
 #include "Amethyst_API_Devices.h"
 
-OscServer::OscServer(const std::string& ipAddress, uint32_t port)
-    : m_udpSender(ipAddress, port)
+OscServer::OscServer(const std::string& ipAddress, uint32_t port, uint32_t incomingPort)
+    : m_udpSender(ipAddress, port, incomingPort)
 {
     // LOG(INFO) << "Initializing OSC Server";
 }

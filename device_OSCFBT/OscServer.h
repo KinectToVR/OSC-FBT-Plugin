@@ -2,6 +2,9 @@
 
 #include <string>
 #include <Eigen/Dense>
+#include "Amethyst_API_Devices.h"
+
+#define HEKKYOSC_ERR(x) (globalLogFunc(StringToWString(x)))
 
 #include "hekky-osc.hpp"
 
@@ -9,7 +12,7 @@ class OscServer
 {
 public:
 
-    OscServer(const std::string& ipAddress, uint32_t port);
+    OscServer(const std::string& ipAddress, uint32_t port, uint32_t incomingPort);
     ~OscServer() = default;
 
 public:

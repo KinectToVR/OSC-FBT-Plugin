@@ -6,8 +6,9 @@
 #include "Amethyst_API_Devices.h"
 #include "Amethyst_API_Paths.h"
 
-// #include "miniosc.h"
 #include "OscServer.h"
+
+std::function<void(std::wstring)> globalLogFunc;
 
 /* Not exported */
 
@@ -89,11 +90,12 @@ private:
     std::wstring m_net_target_ip_address = L"127.0.0.1";
     // Default port to stream OSC packets on. Currently defaults to 9000.
     uint32_t m_net_port = 9000;
+    uint32_t m_net_port_in = 9001;
     const uint32_t OSC_OFFSET_DEFAULT = 150;
 
     // UI Elements
-    ktvr::Interface::TextBlock *m_ip_label_text_block, *m_port_label_text_block, * m_yoffset_label;
-    ktvr::Interface::TextBox *m_ip_text_box, *m_port_text_box;
+    ktvr::Interface::TextBlock *m_ip_label_text_block, *m_port_label_text_block, *m_yoffset_label, *m_portIn_label_text_block;
+    ktvr::Interface::TextBox *m_ip_text_box, *m_port_text_box, *m_portIn_text_box;
     ktvr::Interface::NumberBox *m_yoffset_number_box;
     ktvr::Interface::Button *m_connect_button;
 };

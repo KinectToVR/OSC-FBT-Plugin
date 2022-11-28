@@ -8,8 +8,6 @@
 
 #include "OscServer.h"
 
-std::function<void(std::wstring)> globalLogFunc;
-
 /* Not exported */
 
 inline uint64_t timeSinceEpochMillis() {

@@ -85,8 +85,6 @@ void OscHandler::shutdown()
 
 void OscHandler::onLoad()
 {
-    globalLogFunc = logInfoMessage;
-
     // Create elements
     m_ip_label_text_block = CreateTextBlock(
         requestLocalizedString(L"/Plugins/OSC-Plugin/Settings/Labels/TargetIP") + L" ");
@@ -153,7 +151,7 @@ void OscHandler::onLoad()
 
     layoutRoot->AppendElementPairStack(
         m_portIn_label_text_block,
-        m_portIn_label_text_block);
+        m_portIn_text_box);
     
     layoutRoot->AppendSingleElement(m_connect_button);
 
